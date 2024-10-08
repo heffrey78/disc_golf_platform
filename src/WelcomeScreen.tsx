@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Card, Form, Button, Alert } from 'react-bootstrap';
+import { Card, CardContent, Typography, TextField, Button, Box, Alert } from '@mui/material';
 
 interface WelcomeScreenProps {
   onLogin: (username: string, password: string) => void;
@@ -25,55 +25,78 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   };
 
   return (
-    <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: '100vh' }}>
-      <Card style={{ width: '300px' }}>
-        <Card.Body>
-          <Card.Title className="text-center mb-4">Welcome to Disc Golf Platform</Card.Title>
-          {loginMessage && <Alert variant="success">{loginMessage}</Alert>}
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      minHeight="100vh"
+    >
+      <Card sx={{ maxWidth: 400, width: '100%' }}>
+        <CardContent>
+          <Typography variant="h5" component="h2" gutterBottom align="center">
+            Welcome to Disc Golf Platform
+          </Typography>
+          {loginMessage && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {loginMessage}
+            </Alert>
+          )}
           {currentUser ? (
-            <div>
-              <p>Welcome, {currentUser}!</p>
-              <Button variant="primary" onClick={onLogout} className="w-100">
+            <Box>
+              <Typography variant="body1" gutterBottom>
+                Welcome, {currentUser}!
+              </Typography>
+              <Button variant="contained" onClick={onLogout} fullWidth>
                 Log Out
               </Button>
-            </div>
+            </Box>
           ) : (
-            <>
-              <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="formUsername">
-                  <Form.Label>Username</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Enter username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                    autoComplete="username"
-                  />
-                </Form.Group>
-                <Form.Group controlId="formPassword">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="current-password"
-                  />
-                </Form.Group>
-                <Button variant="primary" type="submit" className="w-100 mb-2">
-                  Log In
-                </Button>
-              </Form>
-              <Button variant="secondary" onClick={onRegisterClick} className="w-100">
+            <Box component="form" onSubmit={handleSubmit} noValidate>
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="username"
+                label="Username"
+                name="username"
+                autoComplete="username"
+                autoFocus
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Log In
+              </Button>
+              <Button
+                fullWidth
+                variant="outlined"
+                onClick={onRegisterClick}
+              >
                 Register
               </Button>
-            </>
+            </Box>
           )}
-        </Card.Body>
+        </CardContent>
       </Card>
-    </Container>
+    </Box>
   );
 };
 

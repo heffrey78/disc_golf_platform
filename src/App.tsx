@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { ThemeProvider, CssBaseline, Container } from '@mui/material';
 import WelcomeScreen from './WelcomeScreen';
 import RegisterScreen from './RegisterScreen';
+import theme from './theme';
 
 interface User {
   username: string;
@@ -40,19 +41,24 @@ function App() {
   };
 
   return (
-    <div className="App">
-      {currentScreen === 'welcome' ? (
-        <WelcomeScreen
-          onLogin={handleLogin}
-          onRegisterClick={() => setCurrentScreen('register')}
-          currentUser={currentUser}
-          onLogout={handleLogout}
-          loginMessage={loginMessage}
-        />
-      ) : (
-        <RegisterScreen onRegister={handleRegister} />
-      )}
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Container maxWidth="sm">
+        <div className="App">
+          {currentScreen === 'welcome' ? (
+            <WelcomeScreen
+              onLogin={handleLogin}
+              onRegisterClick={() => setCurrentScreen('register')}
+              currentUser={currentUser}
+              onLogout={handleLogout}
+              loginMessage={loginMessage}
+            />
+          ) : (
+            <RegisterScreen onRegister={handleRegister} />
+          )}
+        </div>
+      </Container>
+    </ThemeProvider>
   );
 }
 

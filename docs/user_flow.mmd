@@ -1,0 +1,35 @@
+graph TD
+    A[Start] --> B{Registered?}
+    B -->|No| C[Register Screen]
+    B -->|Yes| D[Login Screen]
+    C --> D
+    D --> E[Forum Home]
+    E --> F{View Category?}
+    E --> G{Create Thread?}
+    E --> H{View Profile?}
+    F -->|Yes| I[Category View]
+    I --> J{View Subforum?}
+    J -->|Yes| K[Subforum View]
+    K --> L{View Thread?}
+    L -->|Yes| M[Thread View]
+    M --> N{Reply to Thread?}
+    N -->|Yes| O[Create Post]
+    G -->|Yes| P[Create Thread Form]
+    P --> K
+    H -->|Yes| Q[User Profile]
+    Q --> R{Edit Profile?}
+    R -->|Yes| S[Edit Profile Form]
+    M --> T{Flag Content?}
+    T -->|Yes| U[Flag for Moderation]
+    E --> V{Logout?}
+    V -->|Yes| W[Logout]
+    W --> A
+
+    classDef userAction fill:#f9f,stroke:#333,stroke-width:2px;
+    class C,D,G,H,N,R,T,V userAction;
+
+    classDef viewState fill:#dfd,stroke:#333,stroke-width:2px;
+    class E,I,K,M,Q viewState;
+
+    classDef formState fill:#ddf,stroke:#333,stroke-width:2px;
+    class O,P,S,U formState;

@@ -1,0 +1,14 @@
+graph TD
+    A[Client Browser] -->|HTTP/HTTPS| B(Load Balancer)
+    B --> C{React Frontend}
+    C --> D[App Component]
+    D --> E[Welcome Screen]
+    D --> F[Register Screen]
+    C -->|API Calls| G[Backend API]
+    G --> H[(Database)]
+    
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#dfd,stroke:#333,stroke-width:2px
+    style G fill:#ddf,stroke:#333,stroke-width:2px
+    style H fill:#fdd,stroke:#333,stroke-width:2px

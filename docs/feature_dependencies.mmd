@@ -1,0 +1,33 @@
+graph TD
+    A[User Registration and Authentication]
+    B[Forum Structure]
+    C[Posting and Replying]
+    D[Moderation]
+    E[Search Functionality]
+    F[Notifications]
+    G[User Reputation System]
+    H[Mobile Responsiveness]
+
+    A --> B
+    A --> C
+    A --> D
+    A --> F
+    A --> G
+    B --> C
+    B --> E
+    C --> D
+    C --> E
+    C --> F
+    C --> G
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#bbf,stroke:#333,stroke-width:2px
+    style C fill:#dfd,stroke:#333,stroke-width:2px
+    style D fill:#fdd,stroke:#333,stroke-width:2px
+    style E fill:#ddf,stroke:#333,stroke-width:2px
+    style F fill:#ffd,stroke:#333,stroke-width:2px
+    style G fill:#dff,stroke:#333,stroke-width:2px
+    style H fill:#fdf,stroke:#333,stroke-width:2px
+
+    classDef independent fill:#fff,stroke:#333,stroke-width:2px;
+    class H independent;
