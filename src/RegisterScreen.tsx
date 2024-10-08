@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, TextField, Button, Box } from '@mui/material';
+import { Card, CardContent, Typography, TextField, Button, Box, Checkbox, FormControlLabel } from '@mui/material';
 
 interface RegisterScreenProps {
-  onRegister: (username: string, password: string) => void;
+  onRegister: (username: string, email: string, password: string, isAdmin: boolean) => void;
 }
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegister }) => {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onRegister(username, password);
+    onRegister(username, email, password, isAdmin);
   };
 
   return (
@@ -44,6 +46,17 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegister }) => {
               margin="normal"
               required
               fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
               name="password"
               label="Password"
               type="password"
@@ -51,6 +64,16 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onRegister }) => {
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isAdmin}
+                  onChange={(e) => setIsAdmin(e.target.checked)}
+                  name="isAdmin"
+                />
+              }
+              label="Register as Admin"
             />
             <Button
               type="submit"

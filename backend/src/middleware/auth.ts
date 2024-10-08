@@ -1,7 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { User } from '../entity/User';
 
-export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+export interface AuthRequest extends Request {
+    user?: User;
+}
+
+export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -10,16 +15,16 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err: any, user: any) => {
         if (err) return res.sendStatus(403);
         
-        (req as any).userId = user.id;
+        req.user = user;
         next();
     });
 };
 
-// Extend Express Request interface to include userId
+// Extend Express Request interface to include user
 declare global {
     namespace Express {
         interface Request {
-            userId?: number;
+            user?: User;
         }
     }
 }

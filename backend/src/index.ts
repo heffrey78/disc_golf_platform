@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { DataSource } from "typeorm";
+import { DataSource, DataSourceOptions } from "typeorm";
 import express from "express";
 import dotenv from "dotenv";
 import { User } from "./entity/User";
@@ -22,23 +22,46 @@ export const createApp = (dataSource: DataSource) => {
     return app;
 };
 
-export const AppDataSource = new DataSource({
-    type: "postgres",
-    url: process.env.DATABASE_URL,
-    entities: [User],
-    migrations: [__dirname + "/migration/**/*.ts"],
-    synchronize: false,
-    logging: false,
-});
+export const getDataSourceConfig = (): DataSourceOptions => {
+    const baseConfig = {
+        entities: [User],
+        migrations: [__dirname + "/migration/**/*.ts"],
+        synchronize: false,
+        logging: false,
+    };
+
+    if (process.env.NODE_ENV === 'test') {
+        return {
+            ...baseConfig,
+            type: 'sqlite',
+            database: ':memory:',
+            synchronize: true, // For testing, we can use synchronize
+        };
+    } else {
+        return {
+            ...baseConfig,
+            type: 'postgres',
+            host: process.env.DB_HOST,
+            port: parseInt(process.env.DB_PORT || '5432'),
+            username: process.env.DB_USERNAME,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_NAME,
+        };
+    }
+};
+
+export const AppDataSource = new DataSource(getDataSourceConfig());
 
 export const initializeApp = async () => {
     try {
         await AppDataSource.initialize();
         console.log("Data Source has been initialized!");
 
-        // Run migrations
-        await AppDataSource.runMigrations();
-        console.log("Migrations have been executed");
+        if (process.env.NODE_ENV !== 'test') {
+            // Run migrations only in non-test environments
+            await AppDataSource.runMigrations();
+            console.log("Migrations have been executed");
+        }
 
         const app = createApp(AppDataSource);
         const PORT = process.env.PORT || 5000;

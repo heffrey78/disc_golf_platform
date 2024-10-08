@@ -7,6 +7,7 @@ interface WelcomeScreenProps {
   currentUser: string | null;
   onLogout: () => void;
   loginMessage: string | null;
+  isAdmin: boolean;
 }
 
 const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
@@ -15,6 +16,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
   currentUser,
   onLogout,
   loginMessage,
+  isAdmin,
 }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -46,6 +48,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
             <Box>
               <Typography variant="body1" gutterBottom>
                 Welcome, {currentUser}!
+                {isAdmin && <span> (Admin)</span>}
               </Typography>
               <Button variant="contained" onClick={onLogout} fullWidth>
                 Log Out

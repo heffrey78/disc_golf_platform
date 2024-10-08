@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
+import { Thread } from "./Thread";
+import { Post } from "./Post";
 
 @Entity()
 export class User {
@@ -14,9 +16,18 @@ export class User {
     @Column({ unique: true })
     email!: string;
 
+    @Column({ default: false })
+    isAdmin!: boolean;
+
     @CreateDateColumn()
     created_at!: Date;
 
     @UpdateDateColumn()
     updated_at!: Date;
+
+    @OneToMany(() => Thread, thread => thread.author)
+    threads!: Thread[];
+
+    @OneToMany(() => Post, post => post.author)
+    posts!: Post[];
 }

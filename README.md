@@ -52,7 +52,25 @@ The project structure is as follows:
 
 ## Forum Feature
 
-We are currently working on implementing a forum feature for the Disc Golf Platform. The following documents provide details about the feature:
+We have implemented a forum feature for the Disc Golf Platform. The forum allows users to engage in discussions about disc golf topics. Here are the key components of the forum:
+
+1. Categories: The main topics or sections of the forum.
+2. Subforums: Subtopics within each category.
+3. Threads: Individual discussion topics created by users.
+4. Posts: Replies within a thread.
+
+### Forum Usage
+
+1. Browsing: Users can browse categories, subforums, and threads without logging in.
+2. Posting: To create threads or reply to existing ones, users need to register and log in.
+3. Admin Features: Admin users have additional privileges such as creating categories and subforums, and moderating content.
+
+### User Roles
+
+1. Regular Users: Can create threads and posts.
+2. Admin Users: Have full moderation capabilities and can manage forum structure.
+
+The following documents provide more details about the forum feature:
 
 - `docs/feature_specifications.md`: Outlines the specifications for the forum feature
 - `docs/feature_breakdown.md`: Provides a breakdown of features, including prioritization, user stories, and acceptance criteria
