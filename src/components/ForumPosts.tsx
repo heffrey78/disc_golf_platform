@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import forumService from '../services/forumService';
 
 interface Post {
@@ -26,11 +26,7 @@ const ForumPosts: React.FC<ForumPostsProps> = ({ threadId, isAdmin }) => {
   const [newPostContent, setNewPostContent] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchThread();
-  }, [threadId]);
-
-  const fetchThread = async () => {
+  const fetchThread = useCallback(async () => {
     try {
       const fetchedThread = await forumService.getThread(threadId);
       setThread(fetchedThread);
@@ -38,7 +34,11 @@ const ForumPosts: React.FC<ForumPostsProps> = ({ threadId, isAdmin }) => {
       setError('Error fetching thread. Please try again.');
       console.error('Error fetching thread:', error);
     }
-  };
+  }, [threadId]);
+
+  useEffect(() => {
+    fetchThread();
+  }, [fetchThread]);
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import forumService from '../services/forumService';
 
@@ -29,11 +29,7 @@ const ForumSubforums: React.FC<ForumSubforumsProps> = ({ categoryId, isAdmin }) 
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    fetchSubforums(currentPage);
-  }, [categoryId, currentPage]);
-
-  const fetchSubforums = async (page: number) => {
+  const fetchSubforums = useCallback(async (page: number) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -45,7 +41,11 @@ const ForumSubforums: React.FC<ForumSubforumsProps> = ({ categoryId, isAdmin }) 
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [categoryId]);
+
+  useEffect(() => {
+    fetchSubforums(currentPage);
+  }, [fetchSubforums, currentPage]);
 
   const handleCreateSubforum = async (e: React.FormEvent) => {
     e.preventDefault();

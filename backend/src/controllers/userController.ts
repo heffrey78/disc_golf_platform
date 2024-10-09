@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
-import { getRepository } from 'typeorm';
 import { User } from '../entity/User';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AuthRequest } from '../middleware/auth';
+import { AppDataSource } from '../index';
 
 export const registerUser = async (req: Request, res: Response) => {
     try {
         const { username, email, password, isAdmin } = req.body;
-        const userRepository = getRepository(User);
+        const userRepository = AppDataSource.getRepository(User);
 
         // Check if user already exists
         const existingUser = await userRepository.findOne({ where: [{ username }, { email }] });
@@ -39,7 +39,7 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
     try {
         const { username, password } = req.body;
-        const userRepository = getRepository(User);
+        const userRepository = AppDataSource.getRepository(User);
 
         // Find user
         const user = await userRepository.findOne({ where: { username } });
@@ -73,7 +73,7 @@ export const getUserInfo = async (req: AuthRequest, res: Response) => {
             return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        const userRepository = getRepository(User);
+        const userRepository = AppDataSource.getRepository(User);
         const user = await userRepository.findOne({ where: { id: req.user.id } });
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -95,7 +95,7 @@ export const updateUserInfo = async (req: AuthRequest, res: Response) => {
         }
 
         const { email, password } = req.body;
-        const userRepository = getRepository(User);
+        const userRepository = AppDataSource.getRepository(User);
 
         const user = await userRepository.findOne({ where: { id: req.user.id } });
         if (!user) {
@@ -126,7 +126,7 @@ export const deleteUser = async (req: AuthRequest, res: Response) => {
             return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        const userRepository = getRepository(User);
+        const userRepository = AppDataSource.getRepository(User);
 
         const user = await userRepository.findOne({ where: { id: req.user.id } });
         if (!user) {

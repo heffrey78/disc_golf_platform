@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import forumService from '../services/forumService';
 
@@ -32,11 +32,7 @@ const ForumThreads: React.FC<ForumThreadsProps> = ({ subforumId, isAdmin }) => {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    fetchThreads(currentPage);
-  }, [subforumId, currentPage]);
-
-  const fetchThreads = async (page: number) => {
+  const fetchThreads = useCallback(async (page: number) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -48,7 +44,11 @@ const ForumThreads: React.FC<ForumThreadsProps> = ({ subforumId, isAdmin }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [subforumId]);
+
+  useEffect(() => {
+    fetchThreads(currentPage);
+  }, [fetchThreads, currentPage]);
 
   const handleCreateThread = async (e: React.FormEvent) => {
     e.preventDefault();

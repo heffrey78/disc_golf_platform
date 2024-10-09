@@ -13,6 +13,7 @@ import forumService from './services/forumService';
 function AppContent() {
   const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [token, setToken] = useState<string | null>(null);
   const [loginMessage, setLoginMessage] = useState<string | null>(null);
   const navigate = useNavigate();

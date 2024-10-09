@@ -2,13 +2,22 @@ import "reflect-metadata";
 import { DataSource, DataSourceOptions } from "typeorm";
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import { User } from "./entity/User";
+import { Thread } from "./entity/Thread";
+import { Post } from "./entity/Post";
+import { Category } from "./entity/Category";
+import { Subforum } from "./entity/Subforum";
 import userRoutes from "./routes/userRoutes";
 
 dotenv.config();
 
 export const createApp = (dataSource: DataSource) => {
     const app = express();
+    
+    // Enable CORS for all routes
+    app.use(cors());
+    
     app.use(express.json());
 
     app.use('/api/users', userRoutes);
@@ -24,7 +33,7 @@ export const createApp = (dataSource: DataSource) => {
 
 export const getDataSourceConfig = (): DataSourceOptions => {
     const baseConfig = {
-        entities: [User],
+        entities: [User, Thread, Post, Category, Subforum],
         migrations: [__dirname + "/migration/**/*.ts"],
         synchronize: false,
         logging: false,
