@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
-import { getRepository, Like } from 'typeorm';
+import { Like } from 'typeorm';
 import { validationResult } from 'express-validator';
 import { Category } from '../entity/Category';
 import { Subforum } from '../entity/Subforum';
 import { Thread } from '../entity/Thread';
 import { Post } from '../entity/Post';
 import { User } from '../entity/User';
+import { AppDataSource } from '../index';
 
 // Extend the Request type to include the user property
 interface AuthRequest extends Request {
@@ -18,7 +19,7 @@ export const listCategories = async (req: Request, res: Response) => {
         const limit = parseInt(req.query.limit as string) || 10;
         const skip = (page - 1) * limit;
 
-        const categoryRepository = getRepository(Category);
+        const categoryRepository = AppDataSource.getRepository(Category);
         const [categories, total] = await categoryRepository.findAndCount({
             relations: ['subforums'],
             skip,
@@ -39,7 +40,7 @@ export const listCategories = async (req: Request, res: Response) => {
 
 export const getCategory = async (req: Request, res: Response) => {
     try {
-        const categoryRepository = getRepository(Category);
+        const categoryRepository = AppDataSource.getRepository(Category);
         const category = await categoryRepository.findOne({ where: { id: parseInt(req.params.id) }, relations: ['subforums'] });
         if (!category) {
             return res.status(404).json({ message: 'Category not found' });
@@ -47,6 +48,29 @@ export const getCategory = async (req: Request, res: Response) => {
         res.json(category);
     } catch (error) {
         console.error('Error in getCategory:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const createCategory = async (req: AuthRequest, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+        const { name, description } = req.body;
+        const categoryRepository = AppDataSource.getRepository(Category);
+
+        const category = categoryRepository.create({
+            name,
+            description
+        });
+
+        await categoryRepository.save(category);
+        res.status(201).json(category);
+    } catch (error) {
+        console.error('Error in createCategory:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -59,8 +83,8 @@ export const createSubforum = async (req: AuthRequest, res: Response) => {
 
     try {
         const { name, description, categoryId } = req.body;
-        const subforumRepository = getRepository(Subforum);
-        const categoryRepository = getRepository(Category);
+        const subforumRepository = AppDataSource.getRepository(Subforum);
+        const categoryRepository = AppDataSource.getRepository(Category);
 
         const category = await categoryRepository.findOne({ where: { id: categoryId } });
         if (!category) {
@@ -87,7 +111,7 @@ export const getSubforum = async (req: Request, res: Response) => {
         const limit = parseInt(req.query.limit as string) || 10;
         const skip = (page - 1) * limit;
 
-        const subforumRepository = getRepository(Subforum);
+        const subforumRepository = AppDataSource.getRepository(Subforum);
         const subforum = await subforumRepository.findOne({
             where: { id: parseInt(req.params.id) },
             relations: ['threads'],
@@ -97,7 +121,7 @@ export const getSubforum = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Subforum not found' });
         }
 
-        const [threads, total] = await getRepository(Thread).findAndCount({
+        const [threads, total] = await AppDataSource.getRepository(Thread).findAndCount({
             where: { subforum: subforum },
             skip,
             take: limit,
@@ -125,9 +149,9 @@ export const createThread = async (req: AuthRequest, res: Response) => {
 
     try {
         const { title, content, subforumId } = req.body;
-        const threadRepository = getRepository(Thread);
-        const subforumRepository = getRepository(Subforum);
-        const postRepository = getRepository(Post);
+        const threadRepository = AppDataSource.getRepository(Thread);
+        const subforumRepository = AppDataSource.getRepository(Subforum);
+        const postRepository = AppDataSource.getRepository(Post);
 
         const subforum = await subforumRepository.findOne({ where: { id: subforumId } });
         if (!subforum) {
@@ -163,7 +187,7 @@ export const getThread = async (req: Request, res: Response) => {
         const limit = parseInt(req.query.limit as string) || 10;
         const skip = (page - 1) * limit;
 
-        const threadRepository = getRepository(Thread);
+        const threadRepository = AppDataSource.getRepository(Thread);
         const thread = await threadRepository.findOne({
             where: { id: parseInt(req.params.id) },
             relations: ['author'],
@@ -173,7 +197,7 @@ export const getThread = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Thread not found' });
         }
 
-        const [posts, total] = await getRepository(Post).findAndCount({
+        const [posts, total] = await AppDataSource.getRepository(Post).findAndCount({
             where: { thread: thread },
             relations: ['author'],
             skip,
@@ -202,8 +226,8 @@ export const createPost = async (req: AuthRequest, res: Response) => {
 
     try {
         const { content, threadId } = req.body;
-        const postRepository = getRepository(Post);
-        const threadRepository = getRepository(Thread);
+        const postRepository = AppDataSource.getRepository(Post);
+        const threadRepository = AppDataSource.getRepository(Thread);
 
         const thread = await threadRepository.findOne({ where: { id: threadId } });
         if (!thread) {
@@ -232,7 +256,7 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
 
     try {
         const { content } = req.body;
-        const postRepository = getRepository(Post);
+        const postRepository = AppDataSource.getRepository(Post);
 
         const post = await postRepository.findOne({ where: { id: parseInt(req.params.id) }, relations: ['author'] });
         if (!post) {
@@ -255,7 +279,7 @@ export const updatePost = async (req: AuthRequest, res: Response) => {
 
 export const deletePost = async (req: AuthRequest, res: Response) => {
     try {
-        const postRepository = getRepository(Post);
+        const postRepository = AppDataSource.getRepository(Post);
 
         const post = await postRepository.findOne({ where: { id: parseInt(req.params.id) }, relations: ['author'] });
         if (!post) {
@@ -282,8 +306,8 @@ export const searchForum = async (req: Request, res: Response) => {
         const limit = parseInt(req.query.limit as string) || 10;
         const skip = (page - 1) * limit;
 
-        const threadRepository = getRepository(Thread);
-        const postRepository = getRepository(Post);
+        const threadRepository = AppDataSource.getRepository(Thread);
+        const postRepository = AppDataSource.getRepository(Post);
 
         const [threads, threadTotal] = await threadRepository.findAndCount({
             where: { title: Like(`%${query}%`) },
@@ -316,7 +340,7 @@ export const searchForum = async (req: Request, res: Response) => {
 
 export const deleteThread = async (req: AuthRequest, res: Response) => {
     try {
-        const threadRepository = getRepository(Thread);
+        const threadRepository = AppDataSource.getRepository(Thread);
 
         const thread = await threadRepository.findOne({ 
             where: { id: parseInt(req.params.id) }, 
@@ -332,7 +356,7 @@ export const deleteThread = async (req: AuthRequest, res: Response) => {
         }
 
         // Delete all posts associated with the thread
-        const postRepository = getRepository(Post);
+        const postRepository = AppDataSource.getRepository(Post);
         await postRepository.remove(thread.posts);
 
         // Delete the thread

@@ -28,7 +28,11 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=postgres://user:password@db:5432/disc_golf_db
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=user
+      - DB_PASSWORD=password
+      - DB_NAME=disc_golf_db
     command: sh -c "npm install && npm run dev"
     depends_on:
       - db

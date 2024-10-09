@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { Subforum } from "./Subforum";
+import type { Subforum } from "./Subforum";
 
 @Entity()
 export class Category {
@@ -12,6 +12,6 @@ export class Category {
     @Column()
     description: string;
 
-    @OneToMany(() => Subforum, subforum => subforum.category)
+    @OneToMany("Subforum", (subforum: Subforum) => subforum.category)
     subforums: Subforum[];
 }

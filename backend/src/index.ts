@@ -9,6 +9,7 @@ import { Post } from "./entity/Post";
 import { Category } from "./entity/Category";
 import { Subforum } from "./entity/Subforum";
 import userRoutes from "./routes/userRoutes";
+import forumRoutes from "./routes/forumRoutes";
 
 dotenv.config();
 
@@ -20,7 +21,14 @@ export const createApp = (dataSource: DataSource) => {
     
     app.use(express.json());
 
+    // Middleware to make dataSource available in req object
+    app.use((req, res, next) => {
+        (req as any).dataSource = dataSource;
+        next();
+    });
+
     app.use('/api/users', userRoutes);
+    app.use('/api/forum', forumRoutes);
 
     // Basic error handling
     app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

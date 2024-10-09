@@ -4,6 +4,7 @@ import { authenticateToken } from '../middleware/auth';
 import {
     listCategories,
     getCategory,
+    createCategory,
     createSubforum,
     getSubforum,
     createThread,
@@ -29,6 +30,12 @@ router.get('/categories/:id', [
     param('id').isInt().withMessage('Invalid category ID'),
     validateRequest
 ], getCategory);
+
+router.post('/categories', authenticateToken, [
+    body('name').notEmpty().withMessage('Category name is required').isLength({ min: 3, max: 100 }).withMessage('Category name must be between 3 and 100 characters'),
+    body('description').notEmpty().withMessage('Category description is required').isLength({ max: 500 }).withMessage('Category description must not exceed 500 characters'),
+    validateRequest
+], createCategory);
 
 // Subforum routes
 router.post('/subforums', authenticateToken, [

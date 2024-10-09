@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from "typeorm";
-import { Category } from "./Category";
-import { Thread } from "./Thread";
+import type { Category } from "./Category";
+import type { Thread } from "./Thread";
 
 @Entity()
 export class Subforum {
@@ -13,9 +13,9 @@ export class Subforum {
     @Column()
     description: string;
 
-    @ManyToOne(() => Category, category => category.subforums)
+    @ManyToOne("Category", (category: Category) => category.subforums)
     category: Category;
 
-    @OneToMany(() => Thread, thread => thread.subforum)
+    @OneToMany("Thread", (thread: Thread) => thread.subforum)
     threads: Thread[];
 }
