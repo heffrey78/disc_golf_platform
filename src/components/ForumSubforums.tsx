@@ -33,7 +33,7 @@ const ForumSubforums: React.FC<ForumSubforumsProps> = ({ categoryId, isAdmin }) 
     try {
       setIsLoading(true);
       setError(null);
-      const response: PaginatedResponse = await forumService.getSubforum(categoryId, page);
+      const response: PaginatedResponse = await forumService.getSubforumsByCategory(categoryId, page);
       setSubforums(response.subforums);
       setTotalPages(response.totalPages);
     } catch (error) {
@@ -79,7 +79,7 @@ const ForumSubforums: React.FC<ForumSubforumsProps> = ({ categoryId, isAdmin }) 
       <ul>
         {subforums.map((subforum) => (
           <li key={subforum.id}>
-            <Link to={`/forum/thread/${subforum.id}`}>
+            <Link to={`/forum/subforum/${subforum.id}`}>
               <h3>{subforum.name}</h3>
             </Link>
             <p>{subforum.description}</p>

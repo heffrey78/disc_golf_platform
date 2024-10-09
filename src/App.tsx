@@ -43,6 +43,7 @@ function AppContent() {
       setIsAdmin(response.isAdmin);
       setToken(response.token);
       localStorage.setItem('token', response.token);
+      console.log('Token stored in localStorage:', response.token); // Add this line
       setLoginMessage(`Welcome, ${username}! You are now logged in.${response.isAdmin ? ' (Admin)' : ''}`);
     } catch (error) {
       setLoginMessage('Invalid username or password.');

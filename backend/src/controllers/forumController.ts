@@ -59,6 +59,11 @@ export const createCategory = async (req: AuthRequest, res: Response) => {
     }
 
     try {
+        // Check if the user is an admin
+        if (!req.user || !req.user.isAdmin) {
+            return res.status(403).json({ message: 'Only admins can create categories' });
+        }
+
         const { name, description } = req.body;
         const categoryRepository = AppDataSource.getRepository(Category);
 
@@ -82,6 +87,11 @@ export const createSubforum = async (req: AuthRequest, res: Response) => {
     }
 
     try {
+        // Check if the user is an admin
+        if (!req.user || !req.user.isAdmin) {
+            return res.status(403).json({ message: 'Only admins can create subforums' });
+        }
+
         const { name, description, categoryId } = req.body;
         const subforumRepository = AppDataSource.getRepository(Subforum);
         const categoryRepository = AppDataSource.getRepository(Category);
@@ -137,6 +147,40 @@ export const getSubforum = async (req: Request, res: Response) => {
         });
     } catch (error) {
         console.error('Error in getSubforum:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getSubforumsByCategory = async (req: Request, res: Response) => {
+    try {
+        const categoryId = parseInt(req.params.categoryId);
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const skip = (page - 1) * limit;
+
+        const categoryRepository = AppDataSource.getRepository(Category);
+        const category = await categoryRepository.findOne({ where: { id: categoryId } });
+
+        if (!category) {
+            return res.status(404).json({ message: 'Category not found' });
+        }
+
+        const subforumRepository = AppDataSource.getRepository(Subforum);
+        const [subforums, total] = await subforumRepository.findAndCount({
+            where: { category: { id: categoryId } },
+            skip,
+            take: limit,
+            order: { name: 'ASC' },
+        });
+
+        res.json({
+            subforums,
+            currentPage: page,
+            totalPages: Math.ceil(total / limit),
+            totalItems: total,
+        });
+    } catch (error) {
+        console.error('Error in getSubforumsByCategory:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };

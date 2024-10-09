@@ -7,6 +7,7 @@ import {
     createCategory,
     createSubforum,
     getSubforum,
+    getSubforumsByCategory,
     createThread,
     getThread,
     deleteThread,
@@ -51,6 +52,14 @@ router.get('/subforums/:id', [
     query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
     validateRequest
 ], getSubforum);
+
+// New route for fetching subforums by category ID
+router.get('/categories/:categoryId/subforums', [
+    param('categoryId').isInt().withMessage('Invalid category ID'),
+    query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+    query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+    validateRequest
+], getSubforumsByCategory);
 
 // Thread routes
 router.post('/threads', authenticateToken, [
